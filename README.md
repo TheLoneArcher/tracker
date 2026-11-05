@@ -1,4 +1,4 @@
-# GATE Tracker
+# Tracker
 
 A static site (`index.html`, `style.css`, `data.js`, `qdata.js`, `app.js`) plus one small serverless function
 (`api/data.js`) that syncs your progress between devices. Without the function it still works, saving to the
@@ -15,8 +15,6 @@ current browser only.
    names with a custom prefix. If none appear, add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
    yourself using the **REST** URL and token from the Upstash console (not the read-only token).
 3. **Settings -> Environment Variables**: add `APP_PASS` (a long password) and optionally `APP_USER`.
-   Without `APP_PASS` the server accepts the default `archer` / `password`, and anyone who finds your URL could
-   read and overwrite your data.
 4. **Redeploy** (Deployments -> the latest one -> Redeploy). Environment variables only apply to new deployments.
 
 ## Check that it works
@@ -53,8 +51,7 @@ syncs the next time it can. Settings -> Export backup downloads a JSON copy any 
 
 ## What changed in this version
 
-- **Exact pages for every question.** `qdata.js` holds the book page and the exam name (for example
-  "GATE CSE 2013 Q31") of all 3,817 questions, generated from the question directory. Logging by page and by
+- **Exact pages for every question.** `qdata.js` holds the book page and the exam name of all 3,817 questions, generated from the question directory. Logging by page and by
   question now agree exactly instead of using an even-spread estimate. The log preview and the Subjects tab name
   the exam question a number refers to, and Subjects has a "Find a question" box to look up a question by its exam
   name. If you edit a book's numbers on the Subjects tab, that book falls back to the old estimate.
