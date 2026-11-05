@@ -595,6 +595,7 @@ let subjSel = SUBJECTS[0].id;
 function viewDashboard(C) {
   const T = C.T, st = S.settings, td = today(), left = diffDays(td, st.examDate);
   const a7 = avgPerDay(C, 7), pr = projection(C), sk = getStreak(C), pc = pacing(td, C);
+  const started = S.logs.length > 0 || Object.keys(S.topicDone).some(id => Object.keys(S.topicDone[id] || {}).length > 0);
   const dd = C.byDay[td] || { min: 0, pages: 0, q: 0 }, ga = C.subs.ga;
   let subs = Object.values(C.subs);
   if (dashSort === 'least') subs.sort((a, b) => a.pct - b.pct);
@@ -614,6 +615,7 @@ function viewDashboard(C) {
   const taskRows = [td, addDays(td, 1)].map(k => { const r = todoRows(k, false); return r ? '<div class="small muted mt">' + (k === td ? 'Today' : 'Tomorrow') + ' tasks</div>' + r : ''; }).join('');
 
   return '<div class="page-head"><h1>Dashboard</h1><span class="muted">' + fmtDate(td, true) + '</span></div>' +
+    (!started ? '<div class="card welcome-card"><div class="welcome-kicker">Your study space</div><h2>Ready when you are.</h2><p class="muted">Nothing has been logged yet. Add your first session from the Log tab and your dashboard will start reflecting your actual progress.</p><a class="btn primary" href="#log">Log your first session</a></div>' : '') +
     '<div class="card hero">' + ring(T.pct, 160, 16) + '<div class="stack" style="width:100%"><div class="tiles">' +
     tile('Pages', Math.round(T.pagesDone).toLocaleString(), 'of ' + T.pages.toLocaleString() + ' &middot; ' + Math.round(T.pages - T.pagesDone).toLocaleString() + ' left') +
     tile('Questions', Math.round(T.qDone).toLocaleString(), 'of ' + T.q.toLocaleString() + ' &middot; ' + Math.round(T.q - T.qDone).toLocaleString() + ' left') +
@@ -638,7 +640,7 @@ function viewDashboard(C) {
     (st.dailyGA > 0 ? tile('GA at ' + st.dailyGA + '/day', ga.finished ? 'Done' : gaDays + ' days', ga.finished ? '' : 'finishes ' + fmtDate(addDays(td, gaDays))) : '') +
     '</div></div></div>' +
 
-    '<div class="card mt"><h2>Last 14 days</h2>' + barChart(rangeDays(14).map(k => dayItem(C, k)), { goal: st.dailyMin, h: 190, fmt: v => hm(v) }) + '</div>' +
+    '<div class="card mt"><h2>Last 14 days</h2>' + (started ? barChart(rangeDays(14).map(k => dayItem(C, k)), { goal: st.dailyMin, h: 190, fmt: v => hm(v) }) : '<p class="muted">Your study history will appear here after your first logged session.</p>') + '</div>' +
     '<div class="row between mt"><h2 style="margin:0">Subjects</h2><label class="row small" style="flex-direction:row;align-items:center">Sort&nbsp;' +
     '<select id="dash-sort" style="width:auto"><option value="default">Syllabus order</option><option value="least"' + (dashSort === 'least' ? ' selected' : '') + '>Least complete</option><option value="remaining"' + (dashSort === 'remaining' ? ' selected' : '') + '>Most work left</option><option value="stale"' + (dashSort === 'stale' ? ' selected' : '') + '>Least recently studied</option></select></label></div>' +
     '<div class="grid cards mt">' + subs.map(r => {
