@@ -1,0 +1,6 @@
+{
+  "name": "gate-tracker",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Personal GATE progress tracker (static site + one tiny sync function for Vercel)"
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>GATE Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section id="login">
+  <form id="login-form" class="login-card" autocomplete="on">
+    <h1>GATE Tracker</h1>
+    <p class="muted">Sign in to continue</p>
+    <label>Username
+      <input id="lu" name="username" type="text" autocomplete="username" autocapitalize="none" required autofocus>
+    </label>
+    <label>Password
+      <input id="lp" name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <label class="check"><input id="lk" type="checkbox" checked> Keep me signed in on this device</label>
+    <button class="btn primary" type="submit">Sign in</button>
+    <p id="login-err" class="err" hidden>Wrong username or password.</p>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand">GATE Tracker</div>
+    <nav id="nav">
+      <a href="#dashboard" data-route="dashboard">Dashboard</a>
+      <a href="#log" data-route="log">Log</a>
+      <a href="#plan" data-route="plan">Plan</a>
+      <a href="#subjects" data-route="subjects">Subjects</a>
+      <a href="#insights" data-route="insights">Insights</a>
+      <a href="#settings" data-route="settings">Settings</a>
+    </nav>
+    <div class="top-right">
+      <button id="sync" class="chip" type="button" title="Sync status (click to sync now)">Local</button>
+      <span id="countdown" class="chip"></span>
+      <button id="theme-btn" class="btn ghost small" type="button">Theme</button>
+      <button id="logout-btn" class="btn ghost small" type="button">Sign out</button>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="qdata.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

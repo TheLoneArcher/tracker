@@ -1,0 +1,6 @@
+{
+  "name": "gate-tracker-tests",
+  "private": true,
+  "scripts": { "test": "node run.js" },
+  "devDependencies": { "jsdom": "^24.0.0" }
+}
