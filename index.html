@@ -27,7 +27,10 @@
 
 <div id="app" hidden>
   <header class="top">
-    <div class="brand">GATE Tracker</div>
+    <a class="brand" href="#dashboard" aria-label="GATE Tracker home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span class="brand-copy"><strong>GATE</strong><small>TRACKER</small></span>
+    </a>
     <nav id="nav">
       <a href="#dashboard" data-route="dashboard">Dashboard</a>
       <a href="#log" data-route="log">Log</a>
@@ -39,7 +42,7 @@
     <div class="top-right">
       <button id="sync" class="chip" type="button" title="Sync status (click to sync now)">Local</button>
       <span id="countdown" class="chip"></span>
-      <button id="theme-btn" class="btn ghost small" type="button">Theme</button>
+      <button id="theme-btn" class="btn ghost small" type="button">Appearance</button>
       <button id="logout-btn" class="btn ghost small" type="button">Sign out</button>
     </div>
   </header>
