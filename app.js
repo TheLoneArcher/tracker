@@ -327,7 +327,8 @@ function qOnDay(C, date, sid) {
   let q = 0; S.logs.forEach(l => { if (l.date === date && l.sid === sid) q += logCounts(l).q; }); return q;
 }
 
-/* ================= plan suggestion (flexible, you can ignore it) ================= */
+/* ================= plan suggestion (ordered GATE study chain) ================= */
+const PLAN_ORDER = ['c', 'ds', 'ml', 'algo', 'gt', 'comb', 'toc', 'cd', 'dl', 'coa', 'os', 'dbms', 'cn', 'sta', 'prob', 'la', 'calc'];
 function suggest(date) {
   const C = compute(), pc = pacing(date, C), st = S.settings, items = [];
   const ga = C.subs.ga;
@@ -337,22 +338,12 @@ function suggest(date) {
     gaMin = Math.max(10, Math.round(q * 4 / 5) * 5);
     items.push({ id: uid(), sid: 'ga', q, pages: Math.max(1, Math.round(q * ga.sub.pages / ga.sub.questions)), min: gaMin, startQ: ga.nextQnum });
   }
-  const cand = Object.values(C.subs).filter(r => r.sub.id !== 'ga' && !r.finished);
-  if (!cand.length) return items;
-  cand.forEach(r => { r.work = r.remP / C.T.pages + r.remQ / C.T.q; });
-  const maxWork = Math.max.apply(null, cand.map(r => r.work)) || 1;
-  cand.forEach(r => {
-    const since = r.last ? clamp(diffDays(r.last, date), 0, 14) : 14;
-    r.prio = 0.55 * (r.work / maxWork) + 0.45 * (since / 14) + 0.001;
-  });
-  cand.sort((a, b) => b.prio - a.prio);
-  const picked = cand.slice(0, clamp(st.blocks, 1, cand.length)), sumPrio = picked.reduce((a, r) => a + r.prio, 0);
+  const picked = PLAN_ORDER.map(sid => C.subs[sid]).find(r => r && !r.finished);
+  if (!picked) return items;
   const budget = Math.max(30, st.dailyMin - gaMin);
-  picked.forEach(r => {
-    const minutes = Math.max(30, Math.round(budget * r.prio / sumPrio / 15) * 15);
-    const qT = Math.min(Math.round(r.remQ), Math.max(1, Math.ceil(pc.reqQ * minutes / budget)));
-    items.push({ id: uid(), sid: r.sub.id, q: qT, pages: Math.min(Math.round(r.remP), Math.max(1, Math.round(qT * r.sub.pages / r.sub.questions))), min: minutes, startQ: r.nextQnum });
-  });
+  const minutes = Math.max(30, Math.round(budget / 15) * 15);
+  const qT = Math.min(Math.round(picked.remQ), Math.max(1, Math.ceil(pc.reqQ * minutes / budget)));
+  items.push({ id: uid(), sid: picked.sub.id, q: qT, pages: Math.min(Math.round(picked.remP), Math.max(1, Math.round(qT * picked.sub.pages / picked.sub.questions))), min: minutes, startQ: picked.nextQnum });
   return items;
 }
 function planActual(date, it) {
@@ -696,7 +687,7 @@ function viewPlan(C) {
   return '<div class="page-head"><h1>Plan</h1><div class="row"><button class="btn small" data-act="plan-prev">&larr;</button><input type="date" id="plan-date" value="' + k + '" style="width:auto"><button class="btn small" data-act="plan-next">&rarr;</button><button class="btn small" data-act="plan-tomorrow">Tomorrow</button></div></div>' +
     '<div class="grid g2"><div class="card"><h2>' + fmtDate(k, true) + '</h2><div class="tiles">' + tile('Planned', hm(tot.min), 'goal ' + hm(st.dailyMin)) + tile('Questions', tot.q, 'planned') + tile('Pages', tot.p, 'planned') + '</div>' +
     '<div class="row mt"><button class="btn primary" data-act="plan-gen">' + (items.length ? 'Regenerate suggestion' : 'Suggest a plan') + '</button>' + (items.length ? '<button class="btn danger" data-act="plan-clear">Clear day</button>' : '') + '</div>' +
-    '<p class="muted small">Suggestions include ' + st.dailyGA + ' General Aptitude questions, plus the subjects with the most work left or the longest gap. The suggested start is only a hint; log whatever you actually do.</p></div>' +
+    '<p class="muted small">Suggestions include ' + st.dailyGA + ' General Aptitude questions, then the first unfinished subject in your study chain. Finish one subject before moving to the next; the suggested start is only a hint.</p></div>' +
     '<div class="card"><h2>Pace check</h2><div class="tiles">' + tile('Needed per day', Math.ceil(pc.reqQ) + ' q', Math.ceil(pc.reqP) + ' pages (core subjects)') + tile('Your 7-day avg', Math.round(a7.q) + ' q', Math.round(a7.pages) + ' pages') + '</div>' +
     '<p class="muted small">' + pc.left + ' study days before the ' + st.revisionDays + '-day revision buffer (exam ' + fmtDate(st.examDate) + ').</p></div></div>' +
     '<div class="card mt"><h2>Blocks</h2>' + (rows || '<p class="muted">No blocks yet. Generate a suggestion or add your own below.</p>') + '</div>' +
@@ -1090,5 +1081,5 @@ setStatus('This device only', 'warn');
 const tok0 = getToken();
 if (tok0) { sync.tok = tok0; showApp(); pull(); }
 
-if (window.__GT_TEST__) window.__GT = { applyEdits, overdueBlocks, overdueTodos, carryAll, saveEdit, openEdit, compute, previewLog, buildMap, p2q, q2p, logIv, mergeStates, normalize, suggest, getS: () => S, setS: v => { S = v; }, sync, pull, push, logCounts, planActual, exactFor, qinfo, finderResults };
+if (window.__GT_TEST__) window.__GT = { applyEdits, overdueBlocks, overdueTodos, carryAll, saveEdit, openEdit, compute, previewLog, buildMap, p2q, q2p, logIv, mergeStates, normalize, suggest, PLAN_ORDER, getS: () => S, setS: v => { S = v; }, sync, pull, push, logCounts, planActual, exactFor, qinfo, finderResults };
 })();

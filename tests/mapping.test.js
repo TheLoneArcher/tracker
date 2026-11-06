@@ -65,6 +65,15 @@ delete S.edits.algo; C = G.compute(); ok(C.subs.algo.map.exact, 'reset restores 
 const fr = G.finderResults(algo, '2013 q31'); ok(/GATE CSE 2013 Q31/.test(fr) && /page 48/.test(fr), 'finder finds 2013 Q31');
 ok(/No question/.test(G.finderResults(algo, 'zzzzzz')), 'finder no hits');
 
+// plan suggestions follow the pasted study chain and keep GA as a side-track
+G.setS(G.normalize(null)); G.applyEdits();
+let plan = G.suggest('2026-11-06');
+ok(plan.map(x => x.sid).join(',') === 'ga,c', 'suggestion starts with GA and Programming in C');
+G.getS().logs.push({ id: 'plan-c', date: '2026-11-06', sid: 'c', mode: 'q', from: 1, to: 132, min: 60, note: '' });
+plan = G.suggest('2026-11-07');
+ok(plan.map(x => x.sid).join(',') === 'ga,ds', 'suggestion advances to Data Structures after Programming in C');
+ok(G.PLAN_ORDER.join(',') === 'c,ds,ml,algo,gt,comb,toc,cd,dl,coa,os,dbms,cn,sta,prob,la,calc', 'plan order matches GATE chain');
+
 // render each tab without throwing
 ['dashboard', 'log', 'plan', 'subjects', 'insights', 'settings'].forEach(r => { try { w.location.hash = '#' + r; w.dispatchEvent(new w.HashChangeEvent('hashchange')); } catch (e) { ok(false, 'route ' + r + ' ' + e.message); } });
 console.log(pass + ' passed, ' + fail + ' failed');
